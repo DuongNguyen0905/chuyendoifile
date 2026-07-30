@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All-in-One Office Tools | PDF · Excel · Word · Image</title>
+<meta name="description" content="Bộ công cụ văn phòng miễn phí: gộp/tách/xoay PDF, chuyển đổi Excel, đọc Word, nén và chuyển đổi ảnh — xử lý hoàn toàn trên trình duyệt, không tải file lên server.">
+<meta name="keywords" content="gộp pdf, tách pdf, xoay pdf, excel sang csv, excel sang json, đọc file docx, nén ảnh, đổi đuôi ảnh, ảnh sang pdf, công cụ văn phòng online">
+<meta property="og:type" content="website">
+<meta property="og:title" content="All-in-One Office Tools | PDF · Excel · Word · Image">
+<meta property="og:description" content="Bộ công cụ văn phòng miễn phí, xử lý hoàn toàn trên trình duyệt: PDF, Excel, Word, Ảnh.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='bold'%3EOT%3C/text%3E%3C/svg%3E">
+
+<!-- TODO (sau khi được Google AdSense duyệt): dán script AdSense chính thức của bạn ở đây, dạng:
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<!-- Client-side processing libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/browser-image-compression/2.0.2/browser-image-compression.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  .tool-card { transition: transform .15s ease, box-shadow .15s ease; }
+  .tool-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0,0,0,.15); }
+  .drop-zone { border: 2px dashed #cbd5e1; transition: background-color .15s ease, border-color .15s ease; }
+  .drop-zone.drag-over { background-color: #eff6ff; border-color: #3b82f6; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<!-- ============ HEADER ============ -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center gap-3">
+    <div class="flex items-center gap-2 font-bold text-xl text-slate-800 shrink-0">
+      <i class="fa-solid fa-layer-group text-blue-600"></i>
+      Office<span class="text-blue-600">Tools</span>
+    </div>
+    <div class="relative flex-1 w-full max-w-xl mx-auto">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+      <input id="toolSearch" type="text" placeholder="Tìm công cụ... (vd: gộp pdf, nén ảnh, excel sang json)"
+        class="w-full pl-10 pr-4 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+    </div>
+  </div>
+</header>
+
+<!-- ============ SECURITY BANNER ============ -->
+<div class="bg-emerald-50 border-b border-emerald-200">
+  <div class="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2 text-emerald-700 text-sm justify-center text-center">
+    <i class="fa-solid fa-shield-halved"></i>
+    <span><strong>Bảo mật tuyệt đối:</strong> Mọi file xử lý ngay trên trình duyệt của bạn. Không có dữ liệu nào được tải lên máy chủ.</span>
+  </div>
+</div>
+
+<!-- ============ AD SLOT: TOP BANNER ============ -->
+<!-- Sau khi được duyệt AdSense, thay khối này bằng <ins class="adsbygoogle" ...></ins> thật của bạn -->
+<div class="max-w-7xl mx-auto px-4 pt-4">
+  <div class="border-2 border-dashed border-slate-300 rounded-lg h-20 flex items-center justify-center text-slate-400 text-xs">
+    Vị trí quảng cáo (Ad Slot — Top Banner)
+  </div>
+</div>
+
+<!-- ============ HERO / DASHBOARD ============ -->
+<main class="max-w-7xl mx-auto px-4 py-10">
+  <div id="dashboardView">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900">Bộ công cụ văn phòng tất cả trong một</h1>
+      <p class="text-slate-500 mt-2">Xử lý PDF, Excel, Word, Ảnh — nhanh, riêng tư, miễn phí.</p>
+    </div>
+
+    <!-- PDF -->
+    <section class="mb-10" data-group="pdf">
+      <h2 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-file-pdf text-red-500"></i> PDF</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="pdf-merge" data-keywords="gộp pdf merge pdf">
+          <i class="fa-solid fa-object-group text-2xl text-red-500 mb-2"></i>
+          <h3 class="font-semibold">Gộp PDF</h3>
+          <p class="text-sm text-slate-500">Ghép nhiều file PDF thành một.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="pdf-split" data-keywords="tách pdf split pdf">
+          <i class="fa-solid fa-scissors text-2xl text-red-500 mb-2"></i>
+          <h3 class="font-semibold">Tách PDF</h3>
+          <p class="text-sm text-slate-500">Tách từng trang thành các file PDF riêng.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="pdf-rotate" data-keywords="xoay pdf rotate pdf">
+          <i class="fa-solid fa-rotate text-2xl text-red-500 mb-2"></i>
+          <h3 class="font-semibold">Xoay PDF</h3>
+          <p class="text-sm text-slate-500">Xoay các trang PDF theo góc mong muốn.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Excel -->
+    <section class="mb-10" data-group="excel">
+      <h2 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-file-excel text-green-600"></i> Excel</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="excel-csv" data-keywords="excel sang csv">
+          <i class="fa-solid fa-file-csv text-2xl text-green-600 mb-2"></i>
+          <h3 class="font-semibold">Excel &rarr; CSV</h3>
+          <p class="text-sm text-slate-500">Chuyển sheet đầu tiên sang file CSV.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="excel-json" data-keywords="excel sang json">
+          <i class="fa-solid fa-file-code text-2xl text-green-600 mb-2"></i>
+          <h3 class="font-semibold">Excel &rarr; JSON</h3>
+          <p class="text-sm text-slate-500">Xuất dữ liệu dạng JSON.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="excel-merge" data-keywords="gộp bảng tính merge excel">
+          <i class="fa-solid fa-table-cells text-2xl text-green-600 mb-2"></i>
+          <h3 class="font-semibold">Gộp Bảng tính</h3>
+          <p class="text-sm text-slate-500">Gộp nhiều file Excel thành 1 bảng.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Word -->
+    <section class="mb-10" data-group="word">
+      <h2 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-file-word text-blue-600"></i> Word</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="word-preview" data-keywords="đọc docx xem trước word">
+          <i class="fa-solid fa-eye text-2xl text-blue-600 mb-2"></i>
+          <h3 class="font-semibold">Xem trước .docx</h3>
+          <p class="text-sm text-slate-500">Đọc và hiển thị nội dung Word trực tiếp.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="word-convert" data-keywords="word sang html text chuyển đổi">
+          <i class="fa-solid fa-file-lines text-2xl text-blue-600 mb-2"></i>
+          <h3 class="font-semibold">Word &rarr; HTML / Text</h3>
+          <p class="text-sm text-slate-500">Chuyển .docx sang HTML hoặc văn bản thuần.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Image -->
+    <section class="mb-10" data-group="image">
+      <h2 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i class="fa-solid fa-image text-purple-600"></i> Image</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="img-compress" data-keywords="nén ảnh compress jpg png">
+          <i class="fa-solid fa-compress text-2xl text-purple-600 mb-2"></i>
+          <h3 class="font-semibold">Nén ảnh JPG/PNG</h3>
+          <p class="text-sm text-slate-500">Giảm dung lượng ảnh theo % chất lượng.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="img-convert" data-keywords="đổi đuôi ảnh convert format">
+          <i class="fa-solid fa-arrows-rotate text-2xl text-purple-600 mb-2"></i>
+          <h3 class="font-semibold">Đổi đuôi ảnh</h3>
+          <p class="text-sm text-slate-500">Chuyển đổi giữa JPG, PNG, WEBP.</p>
+        </div>
+        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="img-to-pdf" data-keywords="ảnh sang pdf image to pdf">
+          <i class="fa-solid fa-file-pdf text-2xl text-purple-600 mb-2"></i>
+          <h3 class="font-semibold">Ảnh &rarr; PDF</h3>
+          <p class="text-sm text-slate-500">Ghép nhiều ảnh thành 1 file PDF.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ TOOL VIEW (dynamic panels) ============ -->
+  <div id="toolView" class="hidden">
+    <button id="backBtn" class="mb-6 text-blue-600 font-medium flex items-center gap-2 hover:underline">
+      <i class="fa-solid fa-arrow-left"></i> Quay lại Dashboard
+    </button>
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 max-w-3xl mx-auto">
+      <h2 id="toolTitle" class="text-2xl font-bold mb-1"></h2>
+      <p id="toolDesc" class="text-slate-500 mb-6"></p>
+
+      <!-- generic drop zone -->
+      <div id="dropZone" class="drop-zone rounded-xl p-8 text-center cursor-pointer mb-5">
+        <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+        <p class="text-slate-500 text-sm" id="dropZoneText">Kéo thả file vào đây hoặc bấm để chọn</p>
+        <input type="file" id="fileInput" class="hidden">
+      </div>
+
+      <div id="fileListBox" class="mb-5 space-y-2"></div>
+      <div id="optionsBox" class="mb-5"></div>
+      <div id="actionBox" class="flex flex-wrap gap-3"></div>
+      <div id="statusBox" class="mt-5 text-sm"></div>
+      <div id="previewBox" class="mt-5 border-t border-slate-200 pt-5 max-h-[420px] overflow-auto"></div>
+    </div>
+  </div>
+
+  <!-- ============ AD SLOT: IN-CONTENT ============ -->
+  <div class="border-2 border-dashed border-slate-300 rounded-lg h-24 flex items-center justify-center text-slate-400 text-xs my-6">
+    Vị trí quảng cáo (Ad Slot — In-Content)
+  </div>
+</main>
+
+<footer class="text-center text-slate-400 text-xs py-8">
+  &copy; 2026 OfficeTools — Xử lý hoàn toàn client-side, không lưu trữ dữ liệu của bạn.
+</footer>
+
+<script>
+/* ===================== TOOL METADATA ===================== */
+const TOOLS = {
+  'pdf-merge':   { title: 'Gộp PDF', desc: 'Chọn nhiều file PDF theo thứ tự muốn ghép.', accept: '.pdf', multiple: true },
+  'pdf-split':   { title: 'Tách PDF', desc: 'Tách từng trang PDF thành các file riêng (đóng gói .zip).', accept: '.pdf', multiple: false },
+  'pdf-rotate':  { title: 'Xoay PDF', desc: 'Xoay toàn bộ trang trong file PDF theo góc chọn.', accept: '.pdf', multiple: false },
+  'excel-csv':   { title: 'Excel → CSV', desc: 'Chuyển sheet đầu tiên của file Excel sang CSV.', accept: '.xlsx,.xls', multiple: false },
+  'excel-json':  { title: 'Excel → JSON', desc: 'Chuyển sheet đầu tiên của file Excel sang JSON.', accept: '.xlsx,.xls', multiple: false },
+  'excel-merge': { title: 'Gộp Bảng tính', desc: 'Gộp sheet đầu tiên của nhiều file Excel thành một bảng.', accept: '.xlsx,.xls', multiple: true },
+  'word-preview':{ title: 'Xem trước .docx', desc: 'Đọc và hiển thị nội dung file Word ngay trên trình duyệt.', accept: '.docx', multiple: false },
+  'word-convert':{ title: 'Word → HTML / Text', desc: 'Chuyển nội dung .docx sang HTML hoặc văn bản thuần để tải về.', accept: '.docx', multiple: false },
+  'img-compress':{ title: 'Nén ảnh JPG/PNG', desc: 'Giảm dung lượng ảnh, tuỳ chỉnh mức chất lượng.', accept: 'image/jpeg,image/png', multiple: true },
+  'img-convert': { title: 'Đổi đuôi ảnh', desc: 'Chuyển ảnh giữa các định dạng JPG, PNG, WEBP.', accept: 'image/*', multiple: true },
+  'img-to-pdf':  { title: 'Ảnh → PDF', desc: 'Chọn nhiều ảnh theo thứ tự để ghép thành 1 file PDF.', accept: 'image/*', multiple: true },
+};
+
+let currentTool = null;
+let currentFiles = [];
+
+const dashboardView = document.getElementById('dashboardView');
+const toolView = document.getElementById('toolView');
+const toolTitle = document.getElementById('toolTitle');
+const toolDesc = document.getElementById('toolDesc');
+const dropZone = document.getElementById('dropZone');
+const dropZoneText = document.getElementById('dropZoneText');
+const fileInput = document.getElementById('fileInput');
+const fileListBox = document.getElementById('fileListBox');
+const optionsBox = document.getElementById('optionsBox');
+const actionBox = document.getElementById('actionBox');
+const statusBox = document.getElementById('statusBox');
+const previewBox = document.getElementById('previewBox');
+
+/* ===================== NAVIGATION ===================== */
+document.querySelectorAll('[data-tool]').forEach(card => {
+  card.addEventListener('click', () => openTool(card.dataset.tool));
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  toolView.classList.add('hidden');
+  dashboardView.classList.remove('hidden');
+  resetState();
+});
+
+function openTool(key) {
+  currentTool = key;
+  const meta = TOOLS[key];
+  toolTitle.textContent = meta.title;
+  toolDesc.textContent = meta.desc;
+  dropZoneText.textContent = meta.multiple ? 'Kéo thả nhiều file vào đây hoặc bấm để chọn' : 'Kéo thả 1 file vào đây hoặc bấm để chọn';
+  fileInput.accept = meta.accept;
+  fileInput.multiple = !!meta.multiple;
+  resetState();
+  dashboardView.classList.add('hidden');
+  toolView.classList.remove('hidden');
+  renderOptions(key);
+  renderActions(key);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetState() {
+  currentFiles = [];
+  fileInput.value = '';
+  fileListBox.innerHTML = '';
+  statusBox.innerHTML = '';
+  previewBox.innerHTML = '';
+}
+
+/* ===================== SEARCH ===================== */
+document.getElementById('toolSearch').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('[data-tool]').forEach(card => {
+    const kw = (card.dataset.keywords + ' ' + card.querySelector('h3').textContent).toLowerCase();
+    card.style.display = kw.includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('section[data-group]').forEach(section => {
+    const anyVisible = [...section.querySelectorAll('[data-tool]')].some(c => c.style.display !== 'none');
+    section.style.display = anyVisible ? '' : 'none';
+  });
+});
+
+/* ===================== DROPZONE / FILE INPUT ===================== */
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+function handleFiles(fileList) {
+  const meta = TOOLS[currentTool];
+  const files = Array.from(fileList);
+  currentFiles = meta.multiple ? [...currentFiles, ...files] : files.slice(0, 1);
+  fileInput.value = '';
+  renderFileList();
+  previewBox.innerHTML = '';
+  statusBox.innerHTML = '';
+  if (currentTool === 'word-preview' && currentFiles[0]) previewWordFile(currentFiles[0]);
+}
+
+function renderFileList() {
+  fileListBox.innerHTML = '';
+  currentFiles.forEach((f, i) => {
+    const row = document.createElement('div');
+    row.className = 'flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm';
+    row.innerHTML = `
+      <span class="truncate flex items-center gap-2"><i class="fa-solid fa-file text-slate-400"></i>${escapeHtml(f.name)}
+        <span class="text-slate-400">(${formatBytes(f.size)})</span></span>
+      <button data-idx="${i}" class="removeFileBtn text-red-500 hover:text-red-700"><i class="fa-solid fa-trash"></i></button>`;
+    fileListBox.appendChild(row);
+  });
+  fileListBox.querySelectorAll('.removeFileBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFiles.splice(Number(btn.dataset.idx), 1);
+      renderFileList();
+    });
+  });
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function setStatus(msg, type = 'info') {
+  const colors = { info: 'text-slate-500', success: 'text-emerald-600', error: 'text-red-600' };
+  statusBox.innerHTML = `<p class="${colors[type]}"><i class="fa-solid ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-exclamation' : 'fa-spinner fa-spin'}"></i> ${escapeHtml(msg)}</p>`;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* ===================== OPTIONS PER TOOL ===================== */
+function renderOptions(key) {
+  optionsBox.innerHTML = '';
+  if (key === 'pdf-rotate') {
+    optionsBox.innerHTML = `
+      <label class="block text-sm font-medium mb-1">Góc xoay</label>
+      <select id="rotateAngle" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="90">90°</option>
+        <option value="180">180°</option>
+        <option value="270">270°</option>
+      </select>`;
+  }
+  if (key === 'img-compress') {
+    optionsBox.innerHTML = `
+      <label class="block text-sm font-medium mb-1">Chất lượng nén: <span id="qualityVal">70</span>%</label>
+      <input id="qualitySlider" type="range" min="10" max="95" value="70" class="w-full">`;
+    optionsBox.querySelector('#qualitySlider').addEventListener('input', (e) => {
+      optionsBox.querySelector('#qualityVal').textContent = e.target.value;
+    });
+  }
+  if (key === 'img-convert') {
+    optionsBox.innerHTML = `
+      <label class="block text-sm font-medium mb-1">Định dạng đích</label>
+      <select id="convertFormat" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="image/jpeg">JPG</option>
+        <option value="image/png">PNG</option>
+        <option value="image/webp">WEBP</option>
+      </select>`;
+  }
+  if (key === 'word-convert') {
+    optionsBox.innerHTML = `
+      <label class="block text-sm font-medium mb-1">Định dạng xuất</label>
+      <select id="wordFormat" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="html">HTML</option>
+        <option value="text">Text (.txt)</option>
+      </select>`;
+  }
+}
+
+/* ===================== ACTIONS PER TOOL ===================== */
+function actionBtn(label, icon, handler) {
+  const btn = document.createElement('button');
+  btn.className = 'bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg flex items-center gap-2';
+  btn.innerHTML = `<i class="fa-solid ${icon}"></i> ${label}`;
+  btn.addEventListener('click', handler);
+  return btn;
+}
+
+function renderActions(key) {
+  actionBox.innerHTML = '';
+  const map = {
+    'pdf-merge': () => actionBox.appendChild(actionBtn('Gộp PDF', 'fa-object-group', mergePdf)),
+    'pdf-split': () => actionBox.appendChild(actionBtn('Tách PDF', 'fa-scissors', splitPdf)),
+    'pdf-rotate': () => actionBox.appendChild(actionBtn('Xoay PDF', 'fa-rotate', rotatePdf)),
+    'excel-csv': () => actionBox.appendChild(actionBtn('Tải về .csv', 'fa-download', () => excelExport('csv'))),
+    'excel-json': () => actionBox.appendChild(actionBtn('Tải về .json', 'fa-download', () => excelExport('json'))),
+    'excel-merge': () => actionBox.appendChild(actionBtn('Gộp & xem trước', 'fa-table-cells', excelMerge)),
+    'word-preview': () => {},
+    'word-convert': () => actionBox.appendChild(actionBtn('Chuyển & tải về', 'fa-file-export', wordConvert)),
+    'img-compress': () => actionBox.appendChild(actionBtn('Nén & tải về', 'fa-compress', imgCompress)),
+    'img-convert': () => actionBox.appendChild(actionBtn('Chuyển & tải về', 'fa-arrows-rotate', imgConvert)),
+    'img-to-pdf': () => actionBox.appendChild(actionBtn('Ghép thành PDF', 'fa-file-pdf', imgToPdf)),
+  };
+  (map[key] || (() => {}))();
+}
+
+/* ===================== PDF TOOLS (pdf-lib) ===================== */
+async function mergePdf() {
+  if (currentFiles.length < 2) return setStatus('Vui lòng chọn ít nhất 2 file PDF.', 'error');
+  setStatus('Đang gộp PDF...');
+  try {
+    const { PDFDocument } = PDFLib;
+    const merged = await PDFDocument.create();
+    for (const file of currentFiles) {
+      const bytes = await file.arrayBuffer();
+      const src = await PDFDocument.load(bytes);
+      const pages = await merged.copyPages(src, src.getPageIndices());
+      pages.forEach(p => merged.addPage(p));
+    }
+    const outBytes = await merged.save();
+    downloadBlob(new Blob([outBytes], { type: 'application/pdf' }), 'merged.pdf');
+    setStatus('Gộp PDF thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+async function splitPdf() {
+  if (!currentFiles[0]) return setStatus('Vui lòng chọn 1 file PDF.', 'error');
+  setStatus('Đang tách PDF...');
+  try {
+    const { PDFDocument } = PDFLib;
+    const bytes = await currentFiles[0].arrayBuffer();
+    const src = await PDFDocument.load(bytes);
+    const zip = new JSZip();
+    const pageCount = src.getPageCount();
+    for (let i = 0; i < pageCount; i++) {
+      const doc = await PDFDocument.create();
+      const [page] = await doc.copyPages(src, [i]);
+      doc.addPage(page);
+      const pageBytes = await doc.save();
+      zip.file(`page-${i + 1}.pdf`, pageBytes);
+    }
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    downloadBlob(zipBlob, 'split-pages.zip');
+    setStatus(`Đã tách ${pageCount} trang thành công!`, 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+async function rotatePdf() {
+  if (!currentFiles[0]) return setStatus('Vui lòng chọn 1 file PDF.', 'error');
+  const angle = Number(document.getElementById('rotateAngle').value);
+  setStatus('Đang xoay PDF...');
+  try {
+    const { PDFDocument, degrees } = PDFLib;
+    const bytes = await currentFiles[0].arrayBuffer();
+    const doc = await PDFDocument.load(bytes);
+    doc.getPages().forEach(page => {
+      const current = page.getRotation().angle;
+      page.setRotation(degrees(current + angle));
+    });
+    const outBytes = await doc.save();
+    downloadBlob(new Blob([outBytes], { type: 'application/pdf' }), 'rotated.pdf');
+    setStatus('Xoay PDF thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+/* ===================== EXCEL TOOLS (SheetJS) ===================== */
+function excelSheetToJson(file) {
+  return file.arrayBuffer().then(buf => {
+    const wb = XLSX.read(buf, { type: 'array' });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    return XLSX.utils.sheet_to_json(sheet, { defval: '' });
+  });
+}
+
+async function excelExport(format) {
+  if (!currentFiles[0]) return setStatus('Vui lòng chọn 1 file Excel.', 'error');
+  setStatus('Đang xử lý...');
+  try {
+    const rows = await excelSheetToJson(currentFiles[0]);
+    if (format === 'csv') {
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const csv = XLSX.utils.sheet_to_csv(ws);
+      downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'export.csv');
+    } else {
+      downloadBlob(new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' }), 'export.json');
+    }
+    renderTablePreview(rows);
+    setStatus('Xuất file thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+async function excelMerge() {
+  if (currentFiles.length < 2) return setStatus('Vui lòng chọn ít nhất 2 file Excel.', 'error');
+  setStatus('Đang gộp bảng tính...');
+  try {
+    let allRows = [];
+    for (const file of currentFiles) {
+      const rows = await excelSheetToJson(file);
+      allRows = allRows.concat(rows);
+    }
+    const ws = XLSX.utils.json_to_sheet(allRows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Merged');
+    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    downloadBlob(new Blob([out], { type: 'application/octet-stream' }), 'merged.xlsx');
+    renderTablePreview(allRows);
+    setStatus(`Đã gộp ${currentFiles.length} file, ${allRows.length} dòng.`, 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+function renderTablePreview(rows, pageSize = 20) {
+  if (!rows.length) { previewBox.innerHTML = '<p class="text-slate-400 text-sm">Không có dữ liệu.</p>'; return; }
+  const cols = Object.keys(rows[0]);
+  const page = rows.slice(0, pageSize);
+  let html = '<div class="overflow-auto"><table class="w-full text-xs border-collapse">';
+  html += '<thead><tr>' + cols.map(c => `<th class="border border-slate-200 bg-slate-100 px-2 py-1 text-left">${escapeHtml(c)}</th>`).join('') + '</tr></thead><tbody>';
+  page.forEach(r => {
+    html += '<tr>' + cols.map(c => `<td class="border border-slate-200 px-2 py-1">${escapeHtml(String(r[c]))}</td>`).join('') + '</tr>';
+  });
+  html += '</tbody></table></div>';
+  if (rows.length > pageSize) html += `<p class="text-slate-400 text-xs mt-2">Hiển thị ${pageSize}/${rows.length} dòng đầu.</p>`;
+  previewBox.innerHTML = html;
+}
+
+/* ===================== WORD TOOLS (mammoth.js) ===================== */
+function previewWordFile(file) {
+  setStatus('Đang đọc file Word...');
+  file.arrayBuffer().then(buf => mammoth.convertToHtml({ arrayBuffer: buf }))
+    .then(result => {
+      previewBox.innerHTML = `<div class="prose max-w-none">${result.value}</div>`;
+      setStatus('Đọc file thành công!', 'success');
+    })
+    .catch(err => setStatus('Lỗi: ' + err.message, 'error'));
+}
+
+async function wordConvert() {
+  if (!currentFiles[0]) return setStatus('Vui lòng chọn 1 file .docx.', 'error');
+  const format = document.getElementById('wordFormat').value;
+  setStatus('Đang chuyển đổi...');
+  try {
+    const buf = await currentFiles[0].arrayBuffer();
+    if (format === 'html') {
+      const result = await mammoth.convertToHtml({ arrayBuffer: buf });
+      previewBox.innerHTML = `<div class="prose max-w-none">${result.value}</div>`;
+      downloadBlob(new Blob([result.value], { type: 'text/html' }), 'converted.html');
+    } else {
+      const result = await mammoth.extractRawText({ arrayBuffer: buf });
+      previewBox.innerHTML = `<pre class="whitespace-pre-wrap text-sm">${escapeHtml(result.value)}</pre>`;
+      downloadBlob(new Blob([result.value], { type: 'text/plain' }), 'converted.txt');
+    }
+    setStatus('Chuyển đổi thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+/* ===================== IMAGE TOOLS ===================== */
+async function imgCompress() {
+  if (!currentFiles.length) return setStatus('Vui lòng chọn ít nhất 1 ảnh.', 'error');
+  const quality = Number(document.getElementById('qualitySlider').value) / 100;
+  setStatus('Đang nén ảnh...');
+  try {
+    const zip = currentFiles.length > 1 ? new JSZip() : null;
+    for (const file of currentFiles) {
+      const compressed = await imageCompression(file, {
+        maxSizeMB: 10,
+        initialQuality: quality,
+        useWebWorker: true,
+      });
+      if (zip) zip.file('compressed-' + file.name, compressed);
+      else downloadBlob(compressed, 'compressed-' + file.name);
+    }
+    if (zip) downloadBlob(await zip.generateAsync({ type: 'blob' }), 'compressed-images.zip');
+    setStatus('Nén ảnh thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function imgConvert() {
+  if (!currentFiles.length) return setStatus('Vui lòng chọn ít nhất 1 ảnh.', 'error');
+  const mime = document.getElementById('convertFormat').value;
+  const ext = mime.split('/')[1];
+  setStatus('Đang chuyển đổi ảnh...');
+  try {
+    const zip = currentFiles.length > 1 ? new JSZip() : null;
+    for (const file of currentFiles) {
+      const img = await loadImage(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      const blob = await new Promise(res => canvas.toBlob(res, mime, 0.92));
+      const name = file.name.replace(/\.[^.]+$/, '') + '.' + ext;
+      if (zip) zip.file(name, blob);
+      else downloadBlob(blob, name);
+    }
+    if (zip) downloadBlob(await zip.generateAsync({ type: 'blob' }), 'converted-images.zip');
+    setStatus('Chuyển đổi thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+async function imageToPngBytes(file) {
+  const img = await loadImage(file);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+  canvas.getContext('2d').drawImage(img, 0, 0);
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+  return blob.arrayBuffer();
+}
+
+async function imgToPdf() {
+  if (!currentFiles.length) return setStatus('Vui lòng chọn ít nhất 1 ảnh.', 'error');
+  setStatus('Đang ghép ảnh thành PDF...');
+  try {
+    const { PDFDocument } = PDFLib;
+    const doc = await PDFDocument.create();
+    for (const file of currentFiles) {
+      // pdf-lib chỉ nhúng trực tiếp được JPG/PNG; định dạng khác (WEBP, GIF...) được chuyển qua canvas sang PNG trước.
+      const isDirectlySupported = file.type === 'image/png' || file.type === 'image/jpeg';
+      const bytes = isDirectlySupported ? await file.arrayBuffer() : await imageToPngBytes(file);
+      const embedded = file.type === 'image/jpeg' ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
+      const page = doc.addPage([embedded.width, embedded.height]);
+      page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
+    }
+    const outBytes = await doc.save();
+    downloadBlob(new Blob([outBytes], { type: 'application/pdf' }), 'images.pdf');
+    setStatus('Ghép ảnh thành PDF thành công!', 'success');
+  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
+}
+
+</script>
+</body>
+</html>

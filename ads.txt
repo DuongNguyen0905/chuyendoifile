@@ -1,0 +1,3 @@
+# Sau khi được Google AdSense duyệt, xoá dấu # ở dòng dưới và thay pub-0000000000000000
+# bằng Publisher ID thật của bạn (xem trong tài khoản AdSense > Sites > ads.txt).
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
