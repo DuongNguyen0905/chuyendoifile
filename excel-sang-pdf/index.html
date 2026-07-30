@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyển Excel sang PDF Online Miễn Phí | ChuyenDoiFile</title>
+<meta name="description" content="Công cụ chuyển file Excel (.xlsx) sang PDF miễn phí, giữ nguyên bảng dữ liệu, tự động phân trang. Xử lý ngay trên trình duyệt, không upload lên server.">
+<meta name="keywords" content="excel sang pdf, chuyển excel sang pdf, xlsx sang pdf online miễn phí, xuất bảng excel ra pdf">
+<link rel="canonical" href="https://chuyendoifile.netlify.app/excel-sang-pdf/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chuyển Excel sang PDF Online Miễn Phí">
+<meta property="og:description" content="Chuyển bảng tính Excel sang file PDF gọn gàng, tự động phân trang, xử lý ngay trên trình duyệt.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='bold'%3EOT%3C/text%3E%3C/svg%3E">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/assets/common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-lg text-slate-800">
+      <i class="fa-solid fa-layer-group text-blue-600"></i> Office<span class="text-blue-600">Tools</span>
+    </a>
+    <nav class="text-sm text-slate-500 flex gap-4">
+      <a href="/word-sang-pdf/" class="hover:text-blue-600">Word→PDF</a>
+      <a href="/anh-sang-pdf/" class="hover:text-blue-600">Ảnh→PDF</a>
+      <a href="/pdf-sang-word/" class="hover:text-blue-600">PDF→Word</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Chuyển Excel sang PDF Online</h1>
+  <p class="text-slate-500 mb-8">Tải lên file Excel (.xlsx/.xls), công cụ sẽ chuyển sheet đầu tiên thành file PDF dạng bảng, tự động phân trang khi dữ liệu dài — xử lý hoàn toàn trên trình duyệt, không upload lên server.</p>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8">
+    <div id="dropZone" class="drop-zone rounded-xl p-8 text-center cursor-pointer mb-5">
+      <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+      <p class="text-slate-500 text-sm">Kéo thả 1 file Excel vào đây hoặc bấm để chọn</p>
+      <input type="file" id="fileInput" class="hidden" accept=".xlsx,.xls">
+    </div>
+    <div id="fileListBox" class="mb-5 space-y-2"></div>
+    <button id="convertBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg flex items-center gap-2">
+      <i class="fa-solid fa-file-pdf"></i> Chuyển sang PDF
+    </button>
+    <div id="statusBox" class="mt-5 text-sm"></div>
+    <div id="previewBox" class="mt-5 border-t border-slate-200 pt-5 max-h-[420px] overflow-auto"></div>
+  </div>
+
+  <section class="mt-10 text-sm text-slate-600">
+    <h2 class="text-lg font-bold text-slate-800 mb-3">Câu hỏi thường gặp</h2>
+    <div class="space-y-4">
+      <div>
+        <p class="font-semibold">Công cụ có chuyển được nhiều sheet không?</p>
+        <p>Hiện tại công cụ chuyển sheet đầu tiên trong file Excel. Nếu cần chuyển sheet khác, hãy đổi tên/di chuyển sheet đó lên vị trí đầu trước khi tải lên.</p>
+      </div>
+      <div>
+        <p class="font-semibold">Bảng dài có tự xuống trang không?</p>
+        <p>Có, công cụ tự động phân trang PDF theo khổ A4 khi dữ liệu dài hơn 1 trang.</p>
+      </div>
+      <div>
+        <p class="font-semibold">File Excel của tôi có được giữ bí mật không?</p>
+        <p>Có. Toàn bộ xử lý diễn ra trên trình duyệt của bạn, dữ liệu không được gửi lên bất kỳ server nào.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 mt-10">
+  <div class="max-w-3xl mx-auto px-4 py-8 text-center text-slate-400 text-xs space-y-3">
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="/" class="hover:text-blue-600">Trang chủ</a>
+      <a href="/word-sang-pdf/" class="hover:text-blue-600">Word sang PDF</a>
+      <a href="/anh-sang-pdf/" class="hover:text-blue-600">Ảnh sang PDF</a>
+      <a href="/pdf-sang-word/" class="hover:text-blue-600">PDF sang Word</a>
+    </div>
+    <p>&copy; 2026 OfficeTools — Xử lý hoàn toàn client-side, không lưu trữ dữ liệu của bạn.</p>
+  </div>
+</footer>
+
+<script src="/assets/common.js"></script>
+<script>
+let currentFile = null;
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileListBox = document.getElementById('fileListBox');
+const statusBox = document.getElementById('statusBox');
+const previewBox = document.getElementById('previewBox');
+
+wireDropzone(dropZone, fileInput, (files) => {
+  currentFile = files[0] || null;
+  renderFileList(fileListBox, currentFile ? [currentFile] : [], () => { currentFile = null; renderFileList(fileListBox, [], () => {}); });
+  previewBox.innerHTML = '';
+  statusBox.innerHTML = '';
+});
+
+function renderTablePreview(rows, pageSize) {
+  pageSize = pageSize || 20;
+  if (!rows.length) { previewBox.innerHTML = '<p class="text-slate-400 text-sm">Không có dữ liệu.</p>'; return; }
+  const cols = Object.keys(rows[0]);
+  const page = rows.slice(0, pageSize);
+  let html = '<div class="overflow-auto"><table class="w-full text-xs border-collapse">';
+  html += '<thead><tr>' + cols.map(c => `<th class="border border-slate-200 bg-slate-100 px-2 py-1 text-left">${escapeHtml(c)}</th>`).join('') + '</tr></thead><tbody>';
+  page.forEach(r => {
+    html += '<tr>' + cols.map(c => `<td class="border border-slate-200 px-2 py-1">${escapeHtml(String(r[c]))}</td>`).join('') + '</tr>';
+  });
+  html += '</tbody></table></div>';
+  if (rows.length > pageSize) html += `<p class="text-slate-400 text-xs mt-2">Hiển thị ${pageSize}/${rows.length} dòng đầu.</p>`;
+  previewBox.innerHTML = html;
+}
+
+document.getElementById('convertBtn').addEventListener('click', async () => {
+  if (!currentFile) return setStatus(statusBox, 'Vui lòng chọn 1 file Excel.', 'error');
+  setStatus(statusBox, 'Đang chuyển đổi...');
+  try {
+    const buf = await currentFile.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    if (!aoa.length) throw new Error('Sheet không có dữ liệu.');
+    const rowsForPreview = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    renderTablePreview(rowsForPreview);
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: aoa[0].length > 6 ? 'landscape' : 'portrait', unit: 'pt' });
+    doc.autoTable({
+      head: [aoa[0]],
+      body: aoa.slice(1),
+      styles: { fontSize: 8, cellPadding: 4 },
+      headStyles: { fillColor: [37, 99, 235] },
+      margin: { top: 40 },
+    });
+    doc.save('excel-sang-pdf.pdf');
+    setStatus(statusBox, 'Chuyển đổi thành công!', 'success');
+  } catch (err) { setStatus(statusBox, 'Lỗi: ' + err.message, 'error'); }
+});
+</script>
+</body>
+</html>

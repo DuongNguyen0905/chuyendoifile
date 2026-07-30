@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyển Ảnh sang PDF Online Miễn Phí | ChuyenDoiFile</title>
+<meta name="description" content="Công cụ chuyển ảnh JPG, PNG, WEBP sang PDF miễn phí, xử lý ngay trên trình duyệt, không upload lên server. Ghép nhiều ảnh thành 1 file PDF duy nhất chỉ trong vài giây.">
+<meta name="keywords" content="ảnh sang pdf, chuyển ảnh sang pdf, jpg sang pdf, png sang pdf, ghép ảnh thành pdf online miễn phí">
+<link rel="canonical" href="https://chuyendoifile.netlify.app/anh-sang-pdf/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chuyển Ảnh sang PDF Online Miễn Phí">
+<meta property="og:description" content="Ghép nhiều ảnh JPG/PNG/WEBP thành 1 file PDF ngay trên trình duyệt, không cần cài đặt phần mềm.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='bold'%3EOT%3C/text%3E%3C/svg%3E">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/assets/common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-lg text-slate-800">
+      <i class="fa-solid fa-layer-group text-blue-600"></i> Office<span class="text-blue-600">Tools</span>
+    </a>
+    <nav class="text-sm text-slate-500 flex gap-4">
+      <a href="/word-sang-pdf/" class="hover:text-blue-600">Word→PDF</a>
+      <a href="/excel-sang-pdf/" class="hover:text-blue-600">Excel→PDF</a>
+      <a href="/pdf-sang-word/" class="hover:text-blue-600">PDF→Word</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Chuyển Ảnh sang PDF Online</h1>
+  <p class="text-slate-500 mb-8">Ghép nhiều ảnh JPG, PNG, WEBP thành 1 file PDF duy nhất — xử lý hoàn toàn trên trình duyệt của bạn, không upload lên bất kỳ server nào, riêng tư tuyệt đối và miễn phí không giới hạn.</p>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8">
+    <div id="dropZone" class="drop-zone rounded-xl p-8 text-center cursor-pointer mb-5">
+      <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+      <p class="text-slate-500 text-sm">Kéo thả nhiều ảnh vào đây hoặc bấm để chọn (theo đúng thứ tự muốn ghép)</p>
+      <input type="file" id="fileInput" class="hidden" accept="image/*" multiple>
+    </div>
+    <div id="fileListBox" class="mb-5 space-y-2"></div>
+    <button id="convertBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg flex items-center gap-2">
+      <i class="fa-solid fa-file-pdf"></i> Ghép thành PDF
+    </button>
+    <div id="statusBox" class="mt-5 text-sm"></div>
+  </div>
+
+  <section class="mt-10 text-sm text-slate-600">
+    <h2 class="text-lg font-bold text-slate-800 mb-3">Câu hỏi thường gặp</h2>
+    <div class="space-y-4">
+      <div>
+        <p class="font-semibold">Công cụ này có giới hạn số lượng ảnh không?</p>
+        <p>Không, bạn có thể ghép bao nhiêu ảnh tùy ý — chỉ giới hạn bởi bộ nhớ trình duyệt của máy bạn.</p>
+      </div>
+      <div>
+        <p class="font-semibold">File ảnh của tôi có bị gửi lên server không?</p>
+        <p>Không. Toàn bộ quá trình xử lý diễn ra ngay trên trình duyệt (client-side), file không rời khỏi máy tính của bạn.</p>
+      </div>
+      <div>
+        <p class="font-semibold">Có hỗ trợ định dạng WEBP, GIF không?</p>
+        <p>Có, mọi định dạng ảnh trình duyệt đọc được đều tự động chuyển đổi phù hợp trước khi ghép vào PDF.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 mt-10">
+  <div class="max-w-3xl mx-auto px-4 py-8 text-center text-slate-400 text-xs space-y-3">
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="/" class="hover:text-blue-600">Trang chủ</a>
+      <a href="/word-sang-pdf/" class="hover:text-blue-600">Word sang PDF</a>
+      <a href="/excel-sang-pdf/" class="hover:text-blue-600">Excel sang PDF</a>
+      <a href="/pdf-sang-word/" class="hover:text-blue-600">PDF sang Word</a>
+    </div>
+    <p>&copy; 2026 OfficeTools — Xử lý hoàn toàn client-side, không lưu trữ dữ liệu của bạn.</p>
+  </div>
+</footer>
+
+<script src="/assets/common.js"></script>
+<script>
+let currentFiles = [];
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileListBox = document.getElementById('fileListBox');
+const statusBox = document.getElementById('statusBox');
+
+wireDropzone(dropZone, fileInput, (files) => {
+  currentFiles = currentFiles.concat(files);
+  refreshList();
+});
+
+function refreshList() {
+  renderFileList(fileListBox, currentFiles, (idx) => { currentFiles.splice(idx, 1); refreshList(); });
+}
+
+async function imageToPngBytes(file) {
+  const img = await new Promise((resolve, reject) => {
+    const im = new Image();
+    im.onload = () => resolve(im);
+    im.onerror = reject;
+    im.src = URL.createObjectURL(file);
+  });
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+  canvas.getContext('2d').drawImage(img, 0, 0);
+  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+  return blob.arrayBuffer();
+}
+
+document.getElementById('convertBtn').addEventListener('click', async () => {
+  if (!currentFiles.length) return setStatus(statusBox, 'Vui lòng chọn ít nhất 1 ảnh.', 'error');
+  setStatus(statusBox, 'Đang ghép ảnh thành PDF...');
+  try {
+    const { PDFDocument } = PDFLib;
+    const doc = await PDFDocument.create();
+    for (const file of currentFiles) {
+      const isDirectlySupported = file.type === 'image/png' || file.type === 'image/jpeg';
+      const bytes = isDirectlySupported ? await file.arrayBuffer() : await imageToPngBytes(file);
+      const embedded = file.type === 'image/jpeg' ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
+      const page = doc.addPage([embedded.width, embedded.height]);
+      page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
+    }
+    const outBytes = await doc.save();
+    downloadBlob(new Blob([outBytes], { type: 'application/pdf' }), 'anh-sang-pdf.pdf');
+    setStatus(statusBox, 'Ghép ảnh thành PDF thành công!', 'success');
+  } catch (err) { setStatus(statusBox, 'Lỗi: ' + err.message, 'error'); }
+});
+</script>
+</body>
+</html>

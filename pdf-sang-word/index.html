@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyển PDF sang Word Online Miễn Phí | ChuyenDoiFile</title>
+<meta name="description" content="Công cụ trích xuất nội dung văn bản từ PDF sang file Word (.docx) có thể chỉnh sửa, miễn phí, xử lý ngay trên trình duyệt, không upload lên server.">
+<meta name="keywords" content="pdf sang word, chuyển pdf sang word, pdf to word online miễn phí, trích xuất văn bản pdf">
+<link rel="canonical" href="https://chuyendoifile.netlify.app/pdf-sang-word/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chuyển PDF sang Word Online Miễn Phí">
+<meta property="og:description" content="Trích xuất văn bản từ PDF sang file .docx có thể chỉnh sửa ngay trên trình duyệt.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='bold'%3EOT%3C/text%3E%3C/svg%3E">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/assets/common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-lg text-slate-800">
+      <i class="fa-solid fa-layer-group text-blue-600"></i> Office<span class="text-blue-600">Tools</span>
+    </a>
+    <nav class="text-sm text-slate-500 flex gap-4">
+      <a href="/word-sang-pdf/" class="hover:text-blue-600">Word→PDF</a>
+      <a href="/excel-sang-pdf/" class="hover:text-blue-600">Excel→PDF</a>
+      <a href="/anh-sang-pdf/" class="hover:text-blue-600">Ảnh→PDF</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Chuyển PDF sang Word Online</h1>
+  <p class="text-slate-500 mb-8">Trích xuất toàn bộ nội dung văn bản từ file PDF sang file Word (.docx) có thể chỉnh sửa được — xử lý hoàn toàn trên trình duyệt, không upload lên server.</p>
+
+  <div class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-sm text-amber-700 mb-6 flex gap-2">
+    <i class="fa-solid fa-circle-info mt-0.5"></i>
+    <span>Công cụ trích xuất <strong>nội dung văn bản</strong> từ PDF. Định dạng phức tạp, ảnh, bảng biểu trong PDF gốc có thể không được giữ nguyên trong file Word xuất ra.</span>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8">
+    <div id="dropZone" class="drop-zone rounded-xl p-8 text-center cursor-pointer mb-5">
+      <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+      <p class="text-slate-500 text-sm">Kéo thả 1 file PDF vào đây hoặc bấm để chọn</p>
+      <input type="file" id="fileInput" class="hidden" accept=".pdf">
+    </div>
+    <div id="fileListBox" class="mb-5 space-y-2"></div>
+    <button id="convertBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg flex items-center gap-2">
+      <i class="fa-solid fa-file-word"></i> Chuyển sang Word
+    </button>
+    <div id="statusBox" class="mt-5 text-sm"></div>
+    <div id="previewBox" class="mt-5 border-t border-slate-200 pt-5 max-h-[420px] overflow-auto"></div>
+  </div>
+
+  <section class="mt-10 text-sm text-slate-600">
+    <h2 class="text-lg font-bold text-slate-800 mb-3">Câu hỏi thường gặp</h2>
+    <div class="space-y-4">
+      <div>
+        <p class="font-semibold">File PDF quét (scan) từ ảnh có chuyển được không?</p>
+        <p>Chưa. Công cụ chỉ đọc được văn bản dạng chữ thật trong PDF, chưa hỗ trợ nhận diện chữ từ ảnh scan (OCR).</p>
+      </div>
+      <div>
+        <p class="font-semibold">Có giữ nguyên bảng biểu, ảnh trong PDF gốc không?</p>
+        <p>Không, phiên bản hiện tại chỉ trích xuất nội dung văn bản thuần, chưa giữ bảng biểu/ảnh gốc.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 mt-10">
+  <div class="max-w-3xl mx-auto px-4 py-8 text-center text-slate-400 text-xs space-y-3">
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="/" class="hover:text-blue-600">Trang chủ</a>
+      <a href="/word-sang-pdf/" class="hover:text-blue-600">Word sang PDF</a>
+      <a href="/excel-sang-pdf/" class="hover:text-blue-600">Excel sang PDF</a>
+      <a href="/anh-sang-pdf/" class="hover:text-blue-600">Ảnh sang PDF</a>
+    </div>
+    <p>&copy; 2026 OfficeTools — Xử lý hoàn toàn client-side, không lưu trữ dữ liệu của bạn.</p>
+  </div>
+</footer>
+
+<script src="/assets/common.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let currentFile = null;
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileListBox = document.getElementById('fileListBox');
+const statusBox = document.getElementById('statusBox');
+const previewBox = document.getElementById('previewBox');
+
+wireDropzone(dropZone, fileInput, (files) => {
+  currentFile = files[0] || null;
+  renderFileList(fileListBox, currentFile ? [currentFile] : [], () => { currentFile = null; renderFileList(fileListBox, [], () => {}); });
+  previewBox.innerHTML = '';
+  statusBox.innerHTML = '';
+});
+
+function escapeXml(str) {
+  return String(str).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+}
+
+async function extractPdfPages(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const lineMap = new Map();
+    content.items.forEach(item => {
+      const y = Math.round(item.transform[5]);
+      if (!lineMap.has(y)) lineMap.set(y, []);
+      lineMap.get(y).push(item.str);
+    });
+    const sortedYs = Array.from(lineMap.keys()).sort((a, b) => b - a);
+    const lines = sortedYs.map(y => lineMap.get(y).join(' ').trim()).filter(Boolean);
+    pages.push(lines);
+  }
+  return pages;
+}
+
+function buildDocxParagraphs(pages) {
+  const paragraphs = [];
+  pages.forEach((lines, pageIdx) => {
+    lines.forEach(line => {
+      paragraphs.push(`<w:p><w:r><w:t xml:space="preserve">${escapeXml(line)}</w:t></w:r></w:p>`);
+    });
+    if (pageIdx < pages.length - 1) {
+      paragraphs.push('<w:p><w:r><w:br w:type="page"/></w:r></w:p>');
+    }
+  });
+  return paragraphs.join('');
+}
+
+async function buildDocxBlob(pages) {
+  const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+  const rootRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+  const documentRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`;
+  const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>${buildDocxParagraphs(pages)}<w:sectPr/></w:body>
+</w:document>`;
+
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', contentTypesXml);
+  zip.folder('_rels').file('.rels', rootRelsXml);
+  const wordFolder = zip.folder('word');
+  wordFolder.file('document.xml', documentXml);
+  wordFolder.folder('_rels').file('document.xml.rels', documentRelsXml);
+  return zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+
+document.getElementById('convertBtn').addEventListener('click', async () => {
+  if (!currentFile) return setStatus(statusBox, 'Vui lòng chọn 1 file PDF.', 'error');
+  setStatus(statusBox, 'Đang trích xuất văn bản từ PDF...');
+  try {
+    const pages = await extractPdfPages(currentFile);
+    const totalLines = pages.reduce((sum, p) => sum + p.length, 0);
+    if (!totalLines) throw new Error('Không tìm thấy văn bản trong PDF (có thể đây là PDF dạng ảnh scan).');
+
+    previewBox.innerHTML = `<pre class="whitespace-pre-wrap text-xs">${escapeHtml(pages.map(p => p.join('\n')).join('\n\n--- Trang mới ---\n\n'))}</pre>`;
+
+    const blob = await buildDocxBlob(pages);
+    downloadBlob(blob, 'pdf-sang-word.docx');
+    setStatus(statusBox, `Chuyển đổi thành công! Đã trích xuất ${pages.length} trang.`, 'success');
+  } catch (err) { setStatus(statusBox, 'Lỗi: ' + err.message, 'error'); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chuyển Word sang PDF Online Miễn Phí | ChuyenDoiFile</title>
+<meta name="description" content="Công cụ chuyển file Word (.docx) sang PDF miễn phí, giữ nguyên định dạng văn bản, tiêu đề, bảng biểu. Xử lý ngay trên trình duyệt, không upload lên server.">
+<meta name="keywords" content="word sang pdf, chuyển word sang pdf, docx sang pdf online miễn phí, convert word to pdf">
+<link rel="canonical" href="https://chuyendoifile.netlify.app/word-sang-pdf/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Chuyển Word sang PDF Online Miễn Phí">
+<meta property="og:description" content="Chuyển file .docx sang PDF ngay trên trình duyệt, giữ định dạng cơ bản, không cần cài đặt phần mềm.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%232563eb'/%3E%3Ctext x='50' y='68' font-size='55' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='bold'%3EOT%3C/text%3E%3C/svg%3E">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="/assets/common.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  #renderSource { position: absolute; left: -99999px; top: 0; width: 794px; padding: 40px; background: #fff; font-family: 'Times New Roman', serif; font-size: 14px; line-height: 1.6; color: #111; }
+  #renderSource img { max-width: 100%; }
+  #renderSource table { border-collapse: collapse; width: 100%; }
+  #renderSource table td, #renderSource table th { border: 1px solid #333; padding: 4px 8px; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+<header class="bg-white border-b border-slate-200">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-lg text-slate-800">
+      <i class="fa-solid fa-layer-group text-blue-600"></i> Office<span class="text-blue-600">Tools</span>
+    </a>
+    <nav class="text-sm text-slate-500 flex gap-4">
+      <a href="/excel-sang-pdf/" class="hover:text-blue-600">Excel→PDF</a>
+      <a href="/anh-sang-pdf/" class="hover:text-blue-600">Ảnh→PDF</a>
+      <a href="/pdf-sang-word/" class="hover:text-blue-600">PDF→Word</a>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-10">
+  <h1 class="text-3xl font-extrabold text-slate-900 mb-2">Chuyển Word sang PDF Online</h1>
+  <p class="text-slate-500 mb-8">Tải lên file Word (.docx), công cụ giữ nguyên tiêu đề, đoạn văn, bảng biểu cơ bản và xuất ra file PDF — xử lý hoàn toàn trên trình duyệt, không upload lên server.</p>
+
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8">
+    <div id="dropZone" class="drop-zone rounded-xl p-8 text-center cursor-pointer mb-5">
+      <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
+      <p class="text-slate-500 text-sm">Kéo thả 1 file .docx vào đây hoặc bấm để chọn</p>
+      <input type="file" id="fileInput" class="hidden" accept=".docx">
+    </div>
+    <div id="fileListBox" class="mb-5 space-y-2"></div>
+    <button id="convertBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg flex items-center gap-2">
+      <i class="fa-solid fa-file-pdf"></i> Chuyển sang PDF
+    </button>
+    <div id="statusBox" class="mt-5 text-sm"></div>
+    <div id="previewBox" class="mt-5 border-t border-slate-200 pt-5 max-h-[420px] overflow-auto"></div>
+  </div>
+
+  <section class="mt-10 text-sm text-slate-600">
+    <h2 class="text-lg font-bold text-slate-800 mb-3">Câu hỏi thường gặp</h2>
+    <div class="space-y-4">
+      <div>
+        <p class="font-semibold">File PDF xuất ra có giữ nguyên 100% định dạng gốc không?</p>
+        <p>Công cụ giữ được tiêu đề, đoạn văn, danh sách, bảng biểu cơ bản. Định dạng phức tạp (cột nhiều khung, ảnh nền, hiệu ứng đặc biệt) có thể hiển thị hơi khác so với bản Word gốc.</p>
+      </div>
+      <div>
+        <p class="font-semibold">File của tôi có được bảo mật không?</p>
+        <p>Có. Toàn bộ xử lý diễn ra trên trình duyệt của bạn, không gửi dữ liệu lên server nào.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-slate-200 mt-10">
+  <div class="max-w-3xl mx-auto px-4 py-8 text-center text-slate-400 text-xs space-y-3">
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="/" class="hover:text-blue-600">Trang chủ</a>
+      <a href="/excel-sang-pdf/" class="hover:text-blue-600">Excel sang PDF</a>
+      <a href="/anh-sang-pdf/" class="hover:text-blue-600">Ảnh sang PDF</a>
+      <a href="/pdf-sang-word/" class="hover:text-blue-600">PDF sang Word</a>
+    </div>
+    <p>&copy; 2026 OfficeTools — Xử lý hoàn toàn client-side, không lưu trữ dữ liệu của bạn.</p>
+  </div>
+</footer>
+
+<div id="renderSource"></div>
+
+<script src="/assets/common.js"></script>
+<script>
+let currentFile = null;
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileListBox = document.getElementById('fileListBox');
+const statusBox = document.getElementById('statusBox');
+const previewBox = document.getElementById('previewBox');
+const renderSource = document.getElementById('renderSource');
+
+wireDropzone(dropZone, fileInput, (files) => {
+  currentFile = files[0] || null;
+  renderFileList(fileListBox, currentFile ? [currentFile] : [], () => { currentFile = null; renderFileList(fileListBox, [], () => {}); });
+  previewBox.innerHTML = '';
+  statusBox.innerHTML = '';
+});
+
+document.getElementById('convertBtn').addEventListener('click', async () => {
+  if (!currentFile) return setStatus(statusBox, 'Vui lòng chọn 1 file .docx.', 'error');
+  setStatus(statusBox, 'Đang đọc file Word...');
+  try {
+    const buf = await currentFile.arrayBuffer();
+    const result = await mammoth.convertToHtml({ arrayBuffer: buf });
+    previewBox.innerHTML = `<div class="prose max-w-none text-sm">${result.value}</div>`;
+    renderSource.innerHTML = result.value;
+
+    setStatus(statusBox, 'Đang chuyển sang PDF (có thể mất vài giây)...');
+    const canvas = await html2canvas(renderSource, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pdfWidth = doc.internal.pageSize.getWidth();
+    const pdfHeight = doc.internal.pageSize.getHeight();
+    const ratio = pdfWidth / canvas.width;
+    const pageHeightPx = pdfHeight / ratio;
+
+    let position = 0;
+    let first = true;
+    while (position < canvas.height) {
+      const sliceHeightPx = Math.min(pageHeightPx, canvas.height - position);
+      const sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = sliceHeightPx;
+      sliceCanvas.getContext('2d').drawImage(canvas, 0, position, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+      const imgData = sliceCanvas.toDataURL('image/jpeg', 0.92);
+      if (!first) doc.addPage();
+      doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, sliceHeightPx * ratio);
+      position += sliceHeightPx;
+      first = false;
+    }
+    doc.save('word-sang-pdf.pdf');
+    setStatus(statusBox, 'Chuyển đổi thành công!', 'success');
+  } catch (err) { setStatus(statusBox, 'Lỗi: ' + err.message, 'error'); }
+});
+</script>
+</body>
+</html>

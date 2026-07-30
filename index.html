@@ -93,6 +93,11 @@
           <h3 class="font-semibold">Xoay PDF</h3>
           <p class="text-sm text-slate-500">Xoay các trang PDF theo góc mong muốn.</p>
         </div>
+        <a href="/pdf-sang-word/" class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer block" data-keywords="pdf sang word chuyển pdf sang word">
+          <i class="fa-solid fa-file-word text-2xl text-red-500 mb-2"></i>
+          <h3 class="font-semibold">PDF &rarr; Word</h3>
+          <p class="text-sm text-slate-500">Trích xuất văn bản PDF sang file Word có thể chỉnh sửa.</p>
+        </a>
       </div>
     </section>
 
@@ -115,6 +120,11 @@
           <h3 class="font-semibold">Gộp Bảng tính</h3>
           <p class="text-sm text-slate-500">Gộp nhiều file Excel thành 1 bảng.</p>
         </div>
+        <a href="/excel-sang-pdf/" class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer block" data-keywords="excel sang pdf chuyển excel sang pdf">
+          <i class="fa-solid fa-file-pdf text-2xl text-green-600 mb-2"></i>
+          <h3 class="font-semibold">Excel &rarr; PDF</h3>
+          <p class="text-sm text-slate-500">Chuyển bảng tính sang PDF, tự động phân trang.</p>
+        </a>
       </div>
     </section>
 
@@ -132,6 +142,11 @@
           <h3 class="font-semibold">Word &rarr; HTML / Text</h3>
           <p class="text-sm text-slate-500">Chuyển .docx sang HTML hoặc văn bản thuần.</p>
         </div>
+        <a href="/word-sang-pdf/" class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer block" data-keywords="word sang pdf chuyển word sang pdf docx sang pdf">
+          <i class="fa-solid fa-file-pdf text-2xl text-blue-600 mb-2"></i>
+          <h3 class="font-semibold">Word &rarr; PDF</h3>
+          <p class="text-sm text-slate-500">Chuyển file .docx sang PDF, giữ định dạng cơ bản.</p>
+        </a>
       </div>
     </section>
 
@@ -149,11 +164,11 @@
           <h3 class="font-semibold">Đổi đuôi ảnh</h3>
           <p class="text-sm text-slate-500">Chuyển đổi giữa JPG, PNG, WEBP.</p>
         </div>
-        <div class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer" data-tool="img-to-pdf" data-keywords="ảnh sang pdf image to pdf">
+        <a href="/anh-sang-pdf/" class="tool-card bg-white rounded-xl border border-slate-200 p-5 cursor-pointer block" data-keywords="ảnh sang pdf image to pdf">
           <i class="fa-solid fa-file-pdf text-2xl text-purple-600 mb-2"></i>
           <h3 class="font-semibold">Ảnh &rarr; PDF</h3>
           <p class="text-sm text-slate-500">Ghép nhiều ảnh thành 1 file PDF.</p>
-        </div>
+        </a>
       </div>
     </section>
   </div>
@@ -202,7 +217,6 @@ const TOOLS = {
   'word-convert':{ title: 'Word → HTML / Text', desc: 'Chuyển nội dung .docx sang HTML hoặc văn bản thuần để tải về.', accept: '.docx', multiple: false },
   'img-compress':{ title: 'Nén ảnh JPG/PNG', desc: 'Giảm dung lượng ảnh, tuỳ chỉnh mức chất lượng.', accept: 'image/jpeg,image/png', multiple: true },
   'img-convert': { title: 'Đổi đuôi ảnh', desc: 'Chuyển ảnh giữa các định dạng JPG, PNG, WEBP.', accept: 'image/*', multiple: true },
-  'img-to-pdf':  { title: 'Ảnh → PDF', desc: 'Chọn nhiều ảnh theo thứ tự để ghép thành 1 file PDF.', accept: 'image/*', multiple: true },
 };
 
 let currentTool = null;
@@ -259,12 +273,12 @@ function resetState() {
 /* ===================== SEARCH ===================== */
 document.getElementById('toolSearch').addEventListener('input', (e) => {
   const q = e.target.value.trim().toLowerCase();
-  document.querySelectorAll('[data-tool]').forEach(card => {
+  document.querySelectorAll('.tool-card[data-keywords]').forEach(card => {
     const kw = (card.dataset.keywords + ' ' + card.querySelector('h3').textContent).toLowerCase();
     card.style.display = kw.includes(q) ? '' : 'none';
   });
   document.querySelectorAll('section[data-group]').forEach(section => {
-    const anyVisible = [...section.querySelectorAll('[data-tool]')].some(c => c.style.display !== 'none');
+    const anyVisible = [...section.querySelectorAll('.tool-card[data-keywords]')].some(c => c.style.display !== 'none');
     section.style.display = anyVisible ? '' : 'none';
   });
 });
@@ -394,7 +408,6 @@ function renderActions(key) {
     'word-convert': () => actionBox.appendChild(actionBtn('Chuyển & tải về', 'fa-file-export', wordConvert)),
     'img-compress': () => actionBox.appendChild(actionBtn('Nén & tải về', 'fa-compress', imgCompress)),
     'img-convert': () => actionBox.appendChild(actionBtn('Chuyển & tải về', 'fa-arrows-rotate', imgConvert)),
-    'img-to-pdf': () => actionBox.appendChild(actionBtn('Ghép thành PDF', 'fa-file-pdf', imgToPdf)),
   };
   (map[key] || (() => {}))();
 }
@@ -596,35 +609,6 @@ async function imgConvert() {
     }
     if (zip) downloadBlob(await zip.generateAsync({ type: 'blob' }), 'converted-images.zip');
     setStatus('Chuyển đổi thành công!', 'success');
-  } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
-}
-
-async function imageToPngBytes(file) {
-  const img = await loadImage(file);
-  const canvas = document.createElement('canvas');
-  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-  canvas.getContext('2d').drawImage(img, 0, 0);
-  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-  return blob.arrayBuffer();
-}
-
-async function imgToPdf() {
-  if (!currentFiles.length) return setStatus('Vui lòng chọn ít nhất 1 ảnh.', 'error');
-  setStatus('Đang ghép ảnh thành PDF...');
-  try {
-    const { PDFDocument } = PDFLib;
-    const doc = await PDFDocument.create();
-    for (const file of currentFiles) {
-      // pdf-lib chỉ nhúng trực tiếp được JPG/PNG; định dạng khác (WEBP, GIF...) được chuyển qua canvas sang PNG trước.
-      const isDirectlySupported = file.type === 'image/png' || file.type === 'image/jpeg';
-      const bytes = isDirectlySupported ? await file.arrayBuffer() : await imageToPngBytes(file);
-      const embedded = file.type === 'image/jpeg' ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
-      const page = doc.addPage([embedded.width, embedded.height]);
-      page.drawImage(embedded, { x: 0, y: 0, width: embedded.width, height: embedded.height });
-    }
-    const outBytes = await doc.save();
-    downloadBlob(new Blob([outBytes], { type: 'application/pdf' }), 'images.pdf');
-    setStatus('Ghép ảnh thành PDF thành công!', 'success');
   } catch (err) { setStatus('Lỗi: ' + err.message, 'error'); }
 }
 
